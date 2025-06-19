@@ -1,6 +1,8 @@
 const message = document.getElementById('message');
 const popSound = document.getElementById('pop-sound');
 const bgMusic = document.getElementById('background-music');
+const audio = new Audio('assets/sound.mp3');
+audio.play();
 
 // Iniciar música al primer clic (por políticas del navegador)
 document.body.addEventListener('click', () => {
