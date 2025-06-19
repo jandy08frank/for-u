@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Corazones Mágicos</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #000;
+      overflow: hidden;
+      height: 100vh;
+      position: relative;
+      font-family: 'Segoe Script', cursive;
+    }
+
+    .message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.8rem;
+      color: #ff80ab;
+      text-align: center;
+      text-shadow: 2px 2px 8px rgba(255, 255, 255, 0.2);
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 1.5s ease-in-out;
+    }
+
+    .message.visible {
+      opacity: 1;
+    }
+
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      transform: rotate(45deg);
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: inherit;
+      border-radius: 50%;
+    }
+
+    .heart::before {
+      top: -50%;
+      left: 0;
+    }
+
+    .heart::after {
+      top: 0;
+      left: -50%;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translate(0, 0) rotate(45deg) scale(1);
+        opacity: 0.6;
+      }
+      100% {
+        transform: translate(var(--wind, 0px), -120vh) rotate(45deg) scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    @keyframes explode {
+      0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--x), var(--y)) scale(0.5);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="message" id="message">TE AMO MUCHO MICHI   ATT: JANDY
+  </div>
+
+<audio id="background-music" autoplay loop>
+  <source src="only-leehi.mp3" type="audio/mpeg">
+  Tu navegador no soporta audio HTML5.
+</audio>
+
+  <!-- Sonido de explosión de corazones -->
+  <audio id="pop-sound" preload="auto">
+    <source src="data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCA...TRUNCADO..." type="audio/mp3" />
+  </audio>
+
+  <script>
+    const message = document.getElementById('message');
+    const popSound = document.getElementById('pop-sound');
+
+    function randomColor() {
+      const colors = ['#ff6b81', '#ff4d6d', '#ff8fab', '#ff0033', '#e91e63', '#f06292'];
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    function createFloatingHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+
+      const size = Math.random() * 15 + 10;
+      heart.style.width = `${size}px`;
+      heart.style.height = `${size}px`;
+
+      const x = Math.random() * window.innerWidth;
+      const wind = (Math.random() - 0.5) * 200;
+
+      heart.style.left = `${x}px`;
+      heart.style.top = `${window.innerHeight}px`;
+      heart.style.backgroundColor = randomColor();
+      heart.style.opacity = 0.4 + Math.random() * 0.3;
+      heart.style.zIndex = 1;
+      heart.style.setProperty('--wind', `${wind}px`);
+      heart.style.animation = `floatUp ${7 + Math.random() * 5}s linear forwards`;
+
+      document.body.appendChild(heart);
+
+      setTimeout(() => heart.remove(), 12000);
+    }
+
+    // Corazones infinitos (¡nunca paran!)
+    setInterval(() => {
+      createFloatingHeart();
+    }, 60); // ~16 corazones por segundo
+
+    // Mostrar mensaje con cada clic
+    function showMessage() {
+      message.textContent = "TE AMO MUCHO MICHI   ATT: JANDY";
+      message.classList.add('visible');
+
+      setTimeout(() => {
+        message.classList.remove('visible');
+      }, 3000);
+    }
+
+    // Fuego artificial + sonido + mensaje
+    document.body.addEventListener('click', (e) => {
+      if (popSound) {
+        popSound.currentTime = 0;
+        popSound.play();
+      }
+
+      showMessage();
+
+      const amount = 20;
+      for (let i = 0; i < amount; i++) {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        const size = Math.random() * 8 + 5;
+        heart.style.width = `${size}px`;
+        heart.style.height = `${size}px`;
+        heart.style.left = `${e.clientX}px`;
+        heart.style.top = `${e.clientY}px`;
+        heart.style.backgroundColor = randomColor();
+        heart.style.opacity = 0.6 + Math.random() * 0.4;
+
+        const angle = Math.random() * 2 * Math.PI;
+        const radius = Math.random() * 100 + 30;
+        const x = Math.cos(angle) * radius;
+        const y = Math.sin(angle) * radius;
+
+        heart.style.setProperty('--x', `${x}px`);
+        heart.style.setProperty('--y', `${y}px`);
+        heart.style.animation = `explode 1.2s ease-out forwards`;
+
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 1500);
+      }
+    });
+  </script>
+</body>
+</html>
